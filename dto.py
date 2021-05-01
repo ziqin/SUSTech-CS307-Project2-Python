@@ -14,9 +14,17 @@ class DayOfWeek(Enum):
     SUNDAY = 7
 
 
-class CourseScoring(Enum):
+class CourseGrading(Enum):
     PASS_OR_FAIL = 1
-    PERCENTAGE = 2
+    HUNDRED_MARK_SCORE = 2
+
+
+class PassOrFailGrade(Enum):
+    PASS = 1
+    FAIL = 2
+
+
+Grade = Union[PassOrFailGrade, int]
 
 
 class EnrollResult(Enum):
@@ -74,7 +82,7 @@ class Course:
     name: str
     credit: int
     class_hour: int
-    scoring: CourseScoring
+    grading: CourseGrading
 
 
 @dataclass(frozen=True)

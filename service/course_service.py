@@ -1,13 +1,13 @@
 from abc import ABC
 from typing import List, Optional
 
-from dto import (Course, CourseScoring, CourseSection, CourseSectionClass,
+from dto import (Course, CourseGrading, CourseSection, CourseSectionClass,
                  DayOfWeek, Prerequisite, Student)
 
 
 class CourseService(ABC):
     async def add_course(self, course_id: str, course_name: str, credit: int,
-                         class_hour: int, scoring: CourseScoring,
+                         class_hour: int, grading: CourseGrading,
                          course_prerequisite: Optional[Prerequisite]):
         raise NotImplementedError
 

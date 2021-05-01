@@ -3,7 +3,7 @@ import datetime
 from typing import List, Mapping, Optional
 
 from dto import (Course, CourseSearchEntry, CourseTable, CourseType,
-                 DayOfWeek, EnrollResult, Major)
+                 DayOfWeek, EnrollResult, Grade, Major)
 
 
 class StudentService(ABC):
@@ -33,18 +33,18 @@ class StudentService(ABC):
     async def drop_course(self, student_id: int, section_id: int):
         raise NotImplementedError
 
-    async def add_enrolled_course_with_score(self, student_id: int,
+    async def add_enrolled_course_with_grade(self, student_id: int,
                                              section_id: int,
-                                             score: Optional[int]):
+                                             grade: Optional[Grade]):
         raise NotImplementedError
 
-    async def set_enrolled_course_score(self, student_id: int,
-                                        section_id: int, score: int):
+    async def set_enrolled_course_grade(self, student_id: int,
+                                        section_id: int, grade: Grade):
         raise NotImplementedError
 
-    async def get_enrolled_courses_and_scores(self, student_id: int,
+    async def get_enrolled_courses_and_grades(self, student_id: int,
                                               semester_id: Optional[int]) \
-            -> Mapping[Course, str]:
+            -> Mapping[Course, Grade]:
         raise NotImplementedError
 
     async def get_course_table(self, student_id: int, date: datetime.date) \
