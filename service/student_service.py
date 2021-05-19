@@ -8,7 +8,7 @@ from dto import (Course, CourseSearchEntry, CourseTable, CourseType,
 
 class StudentService(ABC):
     async def add_student(self, user_id: int, major_id: int, first_name: str,
-                          last_name: str, enrolled_date: datetime.date) -> int:
+                          last_name: str, enrolled_date: datetime.date):
         raise NotImplementedError
 
     async def search_course(self, *, student_id: int, semester_id: int,
