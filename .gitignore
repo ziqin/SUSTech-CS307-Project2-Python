@@ -24,3 +24,6 @@ venv.bak/
 # Folder config file
 .DS_Store
 [Dd]esktop.ini
+
+# Archive for submission
+src.tar.gz
