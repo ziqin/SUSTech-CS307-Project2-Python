@@ -30,6 +30,9 @@ class CourseService(ABC):
     async def remove_course_section_class(self, class_id: int):
         raise NotImplementedError
 
+    async def get_all_courses(self) -> List[Course]:
+        raise NotImplementedError
+
     async def get_course_sections_in_semester(self, course_id: str,
                                               semester_id: int
                                               ) -> List[CourseSection]:
