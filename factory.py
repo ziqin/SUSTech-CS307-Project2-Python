@@ -1,14 +1,32 @@
 from configparser import ConfigParser
 from pathlib import Path
 
+import asyncpg
+
 from service import *
 
 
+def create_async_context():
+    # You can customize the async context manager in this function.
+    # e.g., you may use other connection pool implementation.
+    config = ConfigParser()
+    config.read(Path(__file__).parent / 'config.ini')
+    db_cfg = config['database']
+    return asyncpg.create_pool(host=db_cfg['host'],
+                               port=db_cfg['port'],
+                               database=db_cfg['database'],
+                               user=db_cfg['username'],
+                               password=db_cfg['password'])
+
+
 class ServiceFactory:
-    def __init__(self):
-        config = ConfigParser()
-        config.read(Path(__file__).parent / 'config.ini')
-        # TODO: initialize database connection / connection pool
+    def __init__(self, context):
+        self._context = context
+        # You can add initialization steps here
+
+    async def async_init(self):
+        # You can add asynchronous initialization steps here.
+        pass
 
     def create_course_service(self) -> CourseService:
         # TODO: return an instance of your implementation
