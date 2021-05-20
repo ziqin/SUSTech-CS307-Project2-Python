@@ -8,7 +8,7 @@ from dto import (Course, CourseGrading, CourseSection, CourseSectionClass,
 class CourseService(ABC):
     async def add_course(self, course_id: str, course_name: str, credit: int,
                          class_hour: int, grading: CourseGrading,
-                         course_prerequisite: Optional[Prerequisite]):
+                         prerequisite: Optional[Prerequisite]):
         raise NotImplementedError
 
     async def add_course_section(self, course_id: str, semester_id: int,
