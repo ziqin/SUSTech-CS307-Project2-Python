@@ -18,7 +18,11 @@ class CourseService(ABC):
 
     async def add_course_section_class(self, section_id: int,
                                        instructor_id: int,
-                                       day_of_week: DayOfWeek) -> int:
+                                       day_of_week: DayOfWeek,
+                                       week_list: List[int],
+                                       class_start: int,
+                                       class_end: int,
+                                       location: str) -> int:
         raise NotImplementedError
 
     async def remove_course(self, course_id: str):

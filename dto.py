@@ -69,7 +69,7 @@ class Instructor:
 class Student:
     id: int
     full_name: str
-    enrolled_data: date
+    enrolled_date: date
     major: Major
 
 
