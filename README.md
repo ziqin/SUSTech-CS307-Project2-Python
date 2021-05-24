@@ -180,7 +180,7 @@ class ServiceFactory:
 
 ## 3. What to submit?
 
-- `schema.sql`: An file with table creation statements, constraints, index creation statements, and stored procedures if
+- `cs307.sql`: An file with table creation statements, constraints, index creation statements, and stored procedures if
   you have, but **without** data in tables.
 - `src.tar.gz`: An archive containing all your Python source files. We have provided a Python script named `bundle.py`
   for you to create a Gzip-compressed archive in a common format.
