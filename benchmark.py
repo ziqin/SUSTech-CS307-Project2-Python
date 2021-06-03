@@ -14,6 +14,8 @@ from tqdm import tqdm
 from dto import AndPrerequisite, OrPrerequisite, CoursePrerequisite, PassOrFailGrade, CourseSearchEntry, Course, \
     CourseSection, CourseSectionClass, CourseType, DayOfWeek, EnrollResult, CourseTableEntry, CourseGrading
 from factory import ServiceFactory, create_async_context
+from service import CourseService, DepartmentService, SemesterService, StudentService, MajorService, UserService, \
+    InstructorService
 
 sid = {}
 sec_id = {}
@@ -37,13 +39,13 @@ us = json.load(open('data/users.json', encoding='utf-8'))
 
 sc = json.load(open('data/studentCourses.json', encoding='utf-8'))
 
-rcs = None
-rds = None
-ris = None
-rms = None
-rss = None
-rsts = None
-rus = None
+rcs: Optional[CourseService] = None
+rds: Optional[DepartmentService] = None
+ris: Optional[InstructorService] = None
+rms: Optional[MajorService] = None
+rss: Optional[SemesterService] = None
+rsts: Optional[StudentService] = None
+rus: Optional[UserService] = None
 
 
 async def pc(pre_json: Optional[dict]):
