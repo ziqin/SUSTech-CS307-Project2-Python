@@ -111,8 +111,8 @@ async def test_add_major():
 
 
 async def test_add_major_course():
-    await asyncio.gather(*[(rms.add_major_compulsory_course(mid[int(k)], c) for c in cc[1]) for k, cc in mcc.items()])
-    await asyncio.gather(*[(rms.add_major_elective_course(mid[int(k)], c) for c in ec[1]) for k, ec in mec.items()])
+    await asyncio.gather(*[(await rms.add_major_compulsory_course(mid[int(k)], c) for c in cc[1]) for k, cc in mcc.items()])
+    await asyncio.gather(*[(await rms.add_major_elective_course(mid[int(k)], c) for c in ec[1]) for k, ec in mec.items()])
 
 
 async def test_add_user():
