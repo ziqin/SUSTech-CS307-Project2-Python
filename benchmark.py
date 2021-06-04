@@ -88,39 +88,41 @@ async def test_add_course():
 
 
 async def test_add_semester():
-    for s in ss:
+    async def one_iter(s):
         b = datetime.fromtimestamp(float(s['begin']) / 1000).date()
         e = datetime.fromtimestamp(float(s['end']) / 1000).date()
         sid[s['id']] = await rss.add_semester(s['name'], b, e)
 
+    await asyncio.gather(*[one_iter(s) for s in ss])
+
 
 async def test_add_department():
-    for d in ds:
+    async def one_iter(d):
         did[d['id']] = await rds.add_department(d['name'])
+
+    await asyncio.gather(*[one_iter(d) for d in ds])
 
 
 async def test_add_major():
-    for m in ms:
+    async def one_iter(m):
         mid[m['id']] = await rms.add_major(m['name'], did[m['department']['id']])
+
+    await asyncio.gather(*[one_iter(m) for m in ms])
 
 
 async def test_add_major_course():
-    for k, cc in mcc.items():
-        for c in cc[1]:
-            await rms.add_major_compulsory_course(mid[int(k)], c)
-    for k, ec in mec.items():
-        for c in ec[1]:
-            await rms.add_major_elective_course(mid[int(k)], c)
+    await asyncio.gather(*[(rms.add_major_compulsory_course(mid[int(k)], c) for c in cc[1]) for k, cc in mcc.items()])
+    await asyncio.gather(*[(rms.add_major_elective_course(mid[int(k)], c) for c in ec[1]) for k, ec in mec.items()])
 
 
 async def test_add_user():
-    for u in us:
+    async def one_iter(u):
         if 'Instructor' in u['@type']:
             await ris.add_instructor(u['id'], u['fullName'].split(',')[0], u['fullName'].split(',')[1])
         else:
             await rsts.add_student(u['id'], mid[u['major']['id']], u['fullName'].split(',')[0],
                                    u['fullName'].split(',')[1], datetime.fromtimestamp(u['enrolledDate'] / 1000).date())
-
+    await asyncio.gather(*[one_iter(u) for u in us])
 
 async def test_select_course():
     failed_cnt = 0
