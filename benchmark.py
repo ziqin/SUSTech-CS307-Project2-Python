@@ -132,9 +132,24 @@ async def test_add_user():
     await asyncio.gather(*[add_one(u) for u in us])
 
 
-# Import course and drop course
-async def test_drop_course():
-    async def test_one_student(stu, gradebook):
+async def test_drop_except():
+    async def drop_one_student(stu, gradebook):
+        exc = 0
+        for sec in gradebook:
+            if sec == '@type':
+                continue
+            try:
+                await rsts.drop_course(int(stu), sec_id(int(sec)))
+            except Exception:
+                exc += 1
+        return exc
+
+    return sum(await asyncio.gather(*[drop_one_student(k, sc[k]) for k in sc]))
+
+
+async def test_import_course():
+    async def import_one_student(stu, gradebook):
+        ok = 0
         for sec in gradebook:
             if sec == '@type':
                 continue
@@ -146,14 +161,14 @@ async def test_drop_course():
                     grade = grade['mark']
                 if isinstance(grade, list):
                     grade = PassOrFailGrade[grade[1]]
-            await rsts.add_enrolled_course_with_grade(int(stu), sec_id[int(sec)], grade)
             try:
-                await rsts.drop_course(int(stu), sec_id[int(sec)])
-                return 0
-            except:
-                return 1
+                await rsts.add_enrolled_course_with_grade(int(stu), sec_id[int(sec)], grade)
+                ok += 1
+            except Exception:
+                pass
+        return ok
 
-    return sum(await asyncio.gather(*[test_one_student(k, sc[k]) for k in sc]))
+    return sum(await asyncio.gather(*[import_one_student(k, sc[k]) for k in sc]))
 
 
 async def test_course_table(path):
@@ -193,31 +208,41 @@ async def test_enroll_course(path):
         res = await rsts.enroll_course(stu, sec)
         ans = EnrollResult[a[1]]
         if res is ans:
-            if res is EnrollResult.SUCCESS:
-                try:
-                    await rsts.drop_course(stu, sec)
-                    return 1, 1
-                except Exception:
-                    return 1, 0
-                    # print(f'DROP FAILED {stu} {sec}')
-            else:
-                return 1, 0
+            return 1
         else:
-            return 0, 0
+            return 0
             # print(f'ENROLL RESULT ERROR: {res}, EXPECTED: {ans}')
 
-    enroll = 0
-    drop = 0
+    ok = 0
     for x in os.listdir(path):
         if (not x.endswith('.json')) or 'Result' in x:
             continue
         params = json.load(open(f'{path}/{x}'))
         ans = json.load(open(f'{path}/{x.split(".")[0]}Result.json'))
-        cnt = await asyncio.gather(*[test_one(p, a) for p, a in zip(params, ans)])
-        for c in cnt:
-            enroll += c[0]
-            drop += c[1]
-    return enroll, drop
+        ok += sum(await asyncio.gather(*[test_one(p, a) for p, a in zip(params, ans)]))
+    return ok
+
+
+async def test_drop_course(path):
+    async def drop_one(p):
+        stu = p[1][0]
+        sec = int(p[1][1])
+        sec = sec_id[sec] if sec in sec_id else sec
+        try:
+            await rsts.drop_course(stu, sec)
+            return 1
+        except Exception:
+            return 0
+            # print(f'DROP FAIL {stu} {sec}')
+
+    ok = 0
+    for x in os.listdir(path):
+        if (not x.endswith('.json')) or 'Result' in x:
+            continue
+        params = json.load(open(f'{path}/{x}'))
+        ans = json.load(open(f'{path}/{x.split(".")[0]}Result.json'))
+        ok += sum(await asyncio.gather(*[drop_one(p) for p, a in zip(params, ans) if a[1]=='SUCCESS']))
+    return ok
 
 
 async def json_query_reader(f):
@@ -317,16 +342,26 @@ async def main():
 
         print('Testing enroll course 1')
         start = time()
-        enroll, drop = await test_enroll_course('data/enrollCourse1')
-        print(f'Test enroll course 1: {enroll}')
+        ok = await test_enroll_course('data/enrollCourse1')
+        print(f'Test enroll course 1: {ok}')
         print(f'Test enroll course 1 time: {round(time() - start, 2)}s')
-        print(f'Test drop enrolled course 1: {drop}')
+
+        print('Testing drop enrolled course 1')
+        start = time()
+        ok = await test_drop_course('data/enrollCourse1')
+        print(f'Test drop enrolled course 1: {ok}')
+        print(f'Test drop enrolled course 1 time: {round(time()-start, 2)}s')
 
         print('Importing student courses')
         start = time()
-        cnt = await test_drop_course()
+        ok = await test_import_course()
+        print(f'Import student course: {ok}')
         print(f'Import student course time: {round(time() - start, 2)}s')
-        print(f'Test drop course: {cnt}')
+
+        print('Testing drop course exception')
+        start = time()
+        exc = await test_drop_except()
+        print(f'Test drop course exception: {exc}')
 
         print('Testing course table 2')
         start = time()
@@ -342,10 +377,15 @@ async def main():
 
         print('Testing enroll course 2')
         start = time()
-        enroll, drop = await test_enroll_course('data/enrollCourse2')
-        print(f'Test enroll course 2: {enroll}')
+        ok = await test_enroll_course('data/enrollCourse2')
+        print(f'Test enroll course 2: {ok}')
         print(f'Test enroll course 2 time: {round(time() - start, 2)}s')
-        print(f'Test drop enrolled course 2: {drop}')
+
+        print('Testing drop enrolled course 2')
+        start = time()
+        ok = await test_drop_course('data/enrollCourse2')
+        print(f'Test drop enrolled course 2: {ok}')
+        print(f'Test drop enrolled course 2 time: {round(time()-start, 2)}s')
 
 
 if __name__ == '__main__':
