@@ -139,7 +139,7 @@ async def test_drop_except():
             if sec == '@type':
                 continue
             try:
-                await rsts.drop_course(int(stu), sec_id(int(sec)))
+                await rsts.drop_course(int(stu), sec_id[int(sec)])
             except Exception:
                 exc += 1
         return exc
@@ -362,6 +362,7 @@ async def main():
         start = time()
         exc = await test_drop_except()
         print(f'Test drop course exception: {exc}')
+        print(f'Test drop course exception time: {round(time()-start, 2)}s')
 
         print('Testing course table 2')
         start = time()
