@@ -5,7 +5,7 @@ import tarfile
 
 ignored_files = ['src.tar.gz', '.DS_Store', 'Desktop.ini', 'desktop.ini', '.directory']
 ignored_types = ['.pyc', '.pyo', '.pyd']
-ignored_dirs = ['.git', '__pycache__', '.venv', 'venv', 'env', 'ENV', '.idea', '.vscode']
+ignored_dirs = ['.git', '__pycache__', '.venv', 'venv', 'env', 'ENV', '.idea', '.vscode', 'data']
 
 
 def bundle_filter(info: tarfile.TarInfo):
