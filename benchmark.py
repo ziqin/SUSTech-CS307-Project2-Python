@@ -71,10 +71,10 @@ async def test_add_course():
         cd[c['id']] = c
         await insert_course(c)
         sections = css[c['id']]
-        for sem in range(1, 4):
+        for sem in list(sections.keys())[1:]:
             for s in sections[f'{sem}'][1:]:
                 for s2 in s:
-                    section_id = await rcs.add_course_section(c['id'], sid[sem], s2['name'], s2['totalCapacity'])
+                    section_id = await rcs.add_course_section(c['id'], sid[int(sem)], s2['name'], s2['totalCapacity'])
                     sec_id[s2['id']] = section_id
                     cls = cscs[f"{s2['id']}"][1]
                     for cl in cls:
@@ -299,7 +299,7 @@ async def test_query(path: str):
             continue
         res = await json_query_reader(open(f'{path}/{x}', encoding='utf-8'))
         ans = await json_answer_reader(open(f"{path}/{x.split('.')[0]}Result.json", encoding='utf-8'))
-        for (r, a) in zip(res, ans):
+        for r, a in zip(res, ans):
             if r == a:
                 ok += 1
     return ok
