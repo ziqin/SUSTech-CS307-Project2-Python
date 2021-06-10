@@ -136,7 +136,7 @@ async def test_drop_except():
     async def drop_one_student(stu, gradebook):
         exc = 0
         for sec in gradebook:
-            if sec == '@type':
+            if sec == '@type' or gradebook[sec] is None:
                 continue
             try:
                 await rsts.drop_course(int(stu), sec_id[int(sec)])
