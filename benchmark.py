@@ -180,11 +180,12 @@ async def test_course_table(path):
                                                e['classBegin'],
                                                e['classEnd'],
                                                e['location']
-                                               ) for e in a['table'][k]]
+                                               ) for e in a['table'][k]].sort(key=lambda it: it.course_full_name)
                for k in a['table']}
         s = p[1][0]
         d = datetime.fromtimestamp(p[1][1] * 86400).date()
         res = await rsts.get_course_table(s, d)
+        res = {k: res[k].sort(key=lambda it: it.course_full_name) for k in res.keys()}
         if ans == res:
             return 1
         else:
