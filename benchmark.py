@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+from collections import defaultdict
 import json
 import os
 from datetime import datetime
@@ -21,6 +22,7 @@ did = {}
 mid = {}
 
 inserted = set()
+course_inserting = defaultdict(asyncio.Lock)
 cd = {}
 cs = json.load(open('data/courses.json', encoding='utf-8'))
 ps = json.load(open('data/coursePrerequisites.json', encoding='utf-8'))
@@ -61,9 +63,12 @@ async def pc(pre_json: Optional[dict]):
 async def insert_course(c):
     if c['id'] in inserted:
         return
-    p = ps[c['id']]
-    inserted.add(c['id'])
-    await rcs.add_course(c['id'], c['name'], c['credit'], c['classHour'], CourseGrading[c['grading']], await pc(p))
+    async with course_inserting[c['id']]:
+        if c['id'] in inserted:
+            return
+        p = ps[c['id']]
+        await rcs.add_course(c['id'], c['name'], c['credit'], c['classHour'], CourseGrading[c['grading']], await pc(p))
+        inserted.add(c['id'])
 
 
 async def test_add_course():
@@ -220,7 +225,7 @@ async def test_enroll_course(path):
             continue
         params = json.load(open(f'{path}/{x}'))
         ans = json.load(open(f'{path}/{x.split(".")[0]}Result.json'))
-        ok += sum(await asyncio.gather(*[test_one(p, a) for p, a in zip(params, ans)]))
+        ok += sum([await test_one(p, a) for p, a in zip(params, ans)])
     return ok
 
 
